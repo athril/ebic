@@ -15,7 +15,7 @@ EvoBic is MIT-licensed. Please see the [repository license](https://github.com/a
 
 ## Installation
 
-EvoBic requires CUDA 8.0, installed C++11 environment and OpenMP.
+EvoBic requires CUDA, installed C++11 environment and OpenMP.
 We maintain the [EvoBic installation instructions](http://athril.github.io/evobic/installation/).
 
 
