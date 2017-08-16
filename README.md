@@ -3,7 +3,7 @@
 EvoBic is a next-generation biclustering algorithm based on artificial intelligence (AI). EvoBic is probably the first algorithm capable of discovering the most challenging patterns (i.e. row-constant, column-constant, shift, scale, shift-scale and trend-preserving) in complex and noisy data with average accuracy of over 90%.
 It is also one of the very few parallel biclustering algorithms that use at least one graphics processing unit (GPU) and is ready for big-data challenges.
 
-EvoBic is mainly implemented in C++11. CUDA with OpenMP used for parallelization.
+EvoBic is mainly implemented in C++11. CUDA with OpenMP are used for parallelization.
 
 **EvoBic is still under active development**
 
@@ -33,7 +33,7 @@ The basic usage of EvoBic is:
 ```$ ./evobic [OPTIONS]```
 
 To override any of default options extra arguments should be added:
-
+```
 Options:
   -i,--input TEXT             input file 
   -n,--iterations INT         number of iterations [default: 5000]
@@ -43,7 +43,7 @@ Options:
   -a,--approx FLOAT           approximate trends acceptance ratio [0.85]
   -m,--negative-trends INT    negative trends [1]
   -l,--log                    is logging enabled [false]
-
+```
 
 
 ## Examples
