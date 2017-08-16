@@ -1,0 +1,23 @@
+site_name: EvoBic
+site_url: http://athril.github.io/evobic
+site_author: Patryk Orzechowski
+site_description: Documentation for EvoBic, a next generation AI-based parallel biclustering algorithm.
+
+repo_url: https://github.com/athril/evobic
+edit_uri: edit/master/docs_sources/
+docs_dir: docs_sources/
+site_dir: docs/
+theme: readthedocs
+
+markdown_extensions:
+  - tables
+  - fenced_code
+
+copyright: Copyright &copy; 2017-Present <a href="http://home.agh.edu.pl/~patrick">Patryk Orzechowski</a>
+
+pages:
+- Home: index.md
+- Installation: installation.md
+- How to use: usage.md
+- Examples: examples.md
+- Release Notes: releases.md
