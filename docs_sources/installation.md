@@ -1,6 +1,7 @@
 ## EvoBic prerequisites
 
-EvoBic requires CUDA Toolkit and C++11 environment to be installed. Please make sure that your computer may run CUDA.
+EvoBic requires CUDA Toolkit (7.0 or later) and C++11 environment to be installed. Please make sure that your computer may run CUDA.
+
 
 Find out your graphic card and check if it is supported on [NVIDIA website](https://developer.nvidia.com/cuda-gpus).
 
