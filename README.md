@@ -1,27 +1,26 @@
 ## ebic - AI-based parallel biclustering algorithm
 
-ebic is a next-generation biclustering algorithm based on artificial intelligence (AI). eBic is probably the first algorithm capable of discovering the most challenging patterns (i.e. row-constant, column-constant, shift, scale, shift-scale and trend-preserving) in complex and noisy data with average accuracy of over 90%.
-It is also one of the very few parallel biclustering algorithms that use at least one graphics processing unit (GPU) and is ready for big-data challenges.
+**ebic** is a next-generation biclustering algorithm based on artificial intelligence (AI). **ebic** is probably the first algorithm capable of discovering the most challenging patterns (i.e. row-constant, column-constant, shift, scale, shift-scale and trend-preserving) in complex and noisy data with average accuracy of over 90%. It is also one of the very few parallel biclustering algorithms that use at least one graphics processing unit (GPU) and is ready for big-data challenges.
 
-ebic is mainly implemented in C++11. CUDA with OpenMP used for parallelization.
+**ebic** is mainly implemented in C++11. CUDA with OpenMP used for parallelization.
 
 **ebic is still under active development**
 
 
 ## License
 
-eBic is MIT-licensed. Please see the [repository license](https://github.com/athril/ebic/blob/master/LICENSE) for the licensing and usage information.
+**ebic** is MIT-licensed. Please see the [repository license](https://github.com/athril/ebic/blob/master/LICENSE) for the licensing and usage information.
 
 
 ## Installation
 
-eBic requires CUDA 8.0, installed C++11 environment and OpenMP.
+**ebic** requires CUDA 8.0, installed C++11 environment and OpenMP.
 We maintain the [ebic installation instructions](http://athril.github.io/ebic/installation/).
 
 
 ## Usage
 
-ebic can be used only as a [command line tool](http://athril.github.io/ebic/usage/).
+**ebic** can be used only as a [command line tool](http://athril.github.io/ebic/usage/).
 
 In order to build a program simply run:
 ```$ make```
