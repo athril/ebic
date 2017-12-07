@@ -8,7 +8,7 @@
   
   <meta name="author" content="Patryk Orzechowski">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>How to use - EvoBic</title>
+  <title>How to use - ebic</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
@@ -35,7 +35,7 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
-        <a href=".." class="icon icon-home"> EvoBic</a>
+        <a href=".." class="icon icon-home"> ebic</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -62,7 +62,7 @@
     <a class="current" href="./">How to use</a>
     <ul class="subnav">
             
-    <li class="toctree-l2"><a href="#using-evobic">Using Evobic</a></li>
+    <li class="toctree-l2"><a href="#using-ebic">Using ebic</a></li>
     
 
     <li class="toctree-l2"><a href="#input">Input</a></li>
@@ -94,7 +94,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="..">EvoBic</a>
+        <a href="..">ebic</a>
       </nav>
 
       
@@ -109,7 +109,7 @@
     <li>How to use</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/athril/evobic/edit/master/docs_sources/usage.md"
+        <a href="https://github.com/athril/ebic/edit/master/docs_sources/usage.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -119,18 +119,18 @@
           <div role="main">
             <div class="section">
               
-                <h2 id="using-evobic">Using Evobic</h2>
-<p>Currently EvoBic can be used only as a command line tool.</p>
+                <h2 id="using-ebic">Using ebic</h2>
+<p>Currently <em>ebic</em> can be used only as a command line tool.</p>
 <p>In order to build a program simply run:</p>
 <pre><code class="Shell">$ make
 </code></pre>
 
 <p>Check our 'input.txt' data file to see the required input file format. In order to run an example simply type:</p>
-<pre><code class="Shell">$ ./evobic -i input.txt
+<pre><code class="Shell">$ ./ebic -i input.txt
 </code></pre>
 
-<p>The basic usage of EvoBic is:</p>
-<pre><code class="Shell">$ ./evobic [OPTIONS]
+<p>The basic usage of ebic is:</p>
+<pre><code class="Shell">$ ./ebic [OPTIONS]
 </code></pre>
 
 <p>To override any of default options extra arguments should be added:</p>
@@ -145,11 +145,11 @@
   -l,--log                    is logging enabled [false]</p>
 <h2 id="input">Input</h2>
 <p>Input files are expected to have a row and a column headers, the values need to be separated by whitespace. 
-The current release of EvoBic analyzes files with continuous values only. EvoBic doesn't handle missing values.
+The current release of <em>ebic</em> doesn't handle missing values.
 Check our toy file (input.txt) for the required file format.</p>
 <h2 id="outputs">Outputs</h2>
-<p>EvoBic writes to its working directory two text files: [input_filename]-res and [input_filename]-blocks.</p>
-<p>The first output file contains in its first line the number of detected biclusters and in consecutive lines each bicluster identifiers in the following format </p>
+<p><em>ebic</em> writes to its working directory two text files: [input_filename]-res and [input_filename]-blocks.</p>
+<p>The first output file contains in its first line the number of detected biclusters and in consecutive lines each bicluster identifiers in the following format.</p>
 <pre><code>Bicluster([row0 row1 ... ],[column0, column1, ...])
 </code></pre>
 
@@ -194,7 +194,7 @@ Extracted part of the input dataset with rows and columns labels of the bicluste
   <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
-          <a href="https://github.com/athril/evobic" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/athril/ebic" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
         <span><a href="../installation/" style="color: #fcfcfc;">&laquo; Previous</a></span>

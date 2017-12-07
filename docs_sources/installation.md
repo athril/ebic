@@ -1,10 +1,10 @@
-## EvoBic prerequisites
+## ebic prerequisites
 
-EvoBic requires CUDA Toolkit and C++11 environment to be installed. Please make sure that your computer may run CUDA.
+*ebic* requires CUDA Toolkit and C++11 environment to be installed. Please make sure that your computer may run CUDA.
 
 Find out your graphic card and check if it is supported on [NVIDIA website](https://developer.nvidia.com/cuda-gpus).
 
-You won't be able to run EvoBic if your graphic card is not supported.
+You won't be able to run *ebic* if your graphic card is not supported.
 
 
 
@@ -26,7 +26,7 @@ The easiest way is downloading the [MinGW-w64](http://mingw-w64.org/doku.php/dow
 
 
 
-## EvoBic compilation
+## ebic compilation
 
 In order to prepare a binary type:
 ```Shell
@@ -34,6 +34,6 @@ make
 ```
 or
 ```Shell
-nvcc -O3 -std=c++11 --expt-extended-lambda -Xcompiler -fopenmp --default-stream per-thread  main.cxx population.cxx dataIO.cxx evobic.cu -L/usr/local/cuda/lib -lcuda -o evobic
+nvcc -O3 -std=c++11 --expt-extended-lambda -Xcompiler -fopenmp --default-stream per-thread  main.cxx population.cxx dataIO.cxx ebic.cu -L/usr/local/cuda/lib -lcuda -o ebic
 ```
 If the command completed successfully, you are ready to go!

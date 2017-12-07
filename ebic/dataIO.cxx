@@ -34,6 +34,8 @@ SOFTWARE.
 
 void load_data(string dataset_filename, vector<float> &input_data, int &num_rows, int &num_cols, vector<string> &row_headers, vector<string> &col_headers) {
   std::ifstream datafile(dataset_filename.c_str());
+  if (!datafile.good())
+    exit(1);
   std::string line;
   int rowid=0;
 
@@ -61,5 +63,4 @@ void load_data(string dataset_filename, vector<float> &input_data, int &num_rows
   }
   //std::cout << "PROBLEM SIZE: " << num_rows << " " << num_cols << std::endl;
   datafile.close();
-
 }

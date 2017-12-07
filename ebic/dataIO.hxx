@@ -23,7 +23,10 @@ SOFTWARE.
 ***/
 
 
-#pragma once
+#ifndef __DATAIO_H__
+#define __DATAIO_H__
+
+
 #include <vector>
 #include <memory>
 
@@ -31,18 +34,14 @@ SOFTWARE.
 using namespace std;
 
 struct problem_t {
-  int num_biclusters;
-  int *bicl_indices; //edges
+  int num_trends;
+  int *bicl_indices;
   int size_indices;
   int *compressed_biclusters;
-  int num_rows;
-  int num_cols;
-  float *data;
-  vector<string> row_headers;
-  vector<string> col_headers;
 };
 
 
 void load_data(string dataset_filename, vector<float> &input_data, int &num_rows, int &num_cols, vector<string> &row_headers, vector<string> &col_headers);
 
 
+#endif

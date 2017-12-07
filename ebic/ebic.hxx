@@ -23,8 +23,8 @@ SOFTWARE.
 ***/
 
 
-#ifndef _EVOBIC_H_
-#define _EVOBIC_H_
+#ifndef _EBIC_H_
+#define _EBIC_H_
 
 #include <assert.h>
 #include <cuda.h>
@@ -37,37 +37,46 @@ SOFTWARE.
 #include "dataIO.hxx"
 #include "parameters.hxx"
 
-class EvoBic {
-  const int NUM_COLUMNS;
-  const int NUM_ROWS;
+
+
+
+class EBic {
+  const int num_cols;
+  const int num_rows;
+  const float* data;
   const int NUM_GPUs;
   int SHARED_MEMORY_SIZE;
-  float APPROX_TRENDS_RATIO;
-  int NEGATIVE_TRENDS_ENABLED;
+  const float APPROX_TRENDS_RATIO;
+  const int NEGATIVE_TRENDS_ENABLED;
+  int NUM_TRENDS;
   int **fitness_array, **coverage;
-
-struct arguments {
-  int *dev_bicl_indices;
-  int *dev_compressed_biclusters;
-  float *dev_data;
-  int dev_data_pos;
-  int dev_data_split;
-  int *dev_coverage;
-  int *dev_fitness_array;
-} *gpu_args;
+  vector<string> *row_headers;
+  vector<string> *col_headers;
+  problem_t problem;
 
 
+  struct gpu_arguments {
+    int *dev_bicl_indices;
+    int *dev_compressed_biclusters;
+    float *dev_data;
+    int dev_data_pos;
+    int dev_data_split;
+    int *dev_coverage;
+    int *dev_fitness_array;
+  } *gpu_args;
 
-public:
-    EvoBic(int num_gpus, int cols, int rows, float approx_trends_ratio, int negative_trends, problem_t *problem);
+
+
+  public:
+    //EBic(int num_gpus, int cols, int rows, float approx_trends_ratio, int negative_trends, int trends_population_size, std::vector<float> &data, std::vector<string> &row_headers, std::vector<string> &col_headers);
+    EBic(int num_gpus, int cols, int rows, float approx_trends_ratio, int negative_trends, int trends_population_size, float *data, std::vector<string> &row_headers, std::vector<string> &col_headers);
     void get_final_biclusters(problem_t *problem);
-    void print_biclusters(problem_t *problem, string results_filename);
-    void print_biclusters_blocks(problem_t *problem, string results_filename);
-    void print_biclusters_synthformat(problem_t *problem, string results_filename);
-
+    void print_biclusters(string results_filename);
+    void print_biclusters_blocks(string results_filename);
+    void print_biclusters_synthformat(string results_filename);
     void determine_fitness(problem_t *problem, float *fitness);
 
-    ~EvoBic();
+    ~EBic();
 };
 
 #endif

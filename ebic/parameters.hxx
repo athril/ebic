@@ -26,14 +26,8 @@ SOFTWARE.
 #ifndef __PARAMETERS_H__
 #define __PARAMETERS_H__
 
-//const static int MAX_ITERATIONS = 5000;
-//const static float OVERLAP_THRESHOLD = 0.75;
-//const static int NUM_GPUs=1;
-//const static float APPROX_TREND_RATIO = 0.85;
-//const static int NEGATIVE_TRENDS=1
 const static int TOURNAMENT_SIZE = 50;
-const static int POPULATION_SIZE = 1600;
-const static int MAX_NUMBER_OF_TABU_HITS = POPULATION_SIZE;
+//const static int MAX_NUMBER_OF_TABU_HITS = POPULATION_SIZE;
 
 const static float RATE_CROSSOVER = 0.2;
 const static float RATE_MUTATION = 0.8;
@@ -49,10 +43,6 @@ const static float OVERLAP_PENALTY = 1.2;
 
 const static int MIN_NO_COLS = 4;
 const static int MIN_NO_ROWS =10;
-
-
-static int NUM_COLUMNS;
-static int NUM_ROWS;
 
 const static float EPSILON=0.000001;
 
