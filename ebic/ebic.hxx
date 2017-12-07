@@ -41,10 +41,11 @@ SOFTWARE.
 
 
 class EBic {
-  const int num_cols;
-  const int num_rows;
-  const float* data;
-  const int NUM_GPUs;
+  const int num_cols;               // number of columns in the input matrix
+  const int num_rows;               // number of rows in the input matrix
+  const float* data;                // input matrix
+  const int NUM_GPUs;               // determines number of GPUs used by ebic
+  int NUM_AVAILABLE_GPUs;     // determines number of devices available
   int SHARED_MEMORY_SIZE;
   const float APPROX_TRENDS_RATIO;
   const int NEGATIVE_TRENDS_ENABLED;

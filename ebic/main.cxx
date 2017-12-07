@@ -52,8 +52,6 @@ int main(int argc, char **argv) {
   float approx_trends_ratio=0.85;
   bool log_enabled=false;
 
-
-
   app.add_option("-i,--input", input_file, "input file")->required();
   //app.add_option("-o,--output", output_file, "output file");
   app.add_option("-n,--iterations", max_iterations, "number of iterations [default: 5000]");
@@ -79,7 +77,7 @@ int main(int argc, char **argv) {
     //loading dataset and assessing its size
     load_data(input_file, input_data, num_rows, num_columns, row_headers, col_headers);
     if (num_columns<=10) 
-      cerr << "To exploit full ebic potential the dataset needs to have at least 15 columns." << endl;
+      cerr << "In order to exploit the full potential of ebic the dataset needs to have at least 20 columns." << endl;
 
     //srand(time(NULL));
     srand(1);

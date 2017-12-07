@@ -26,9 +26,8 @@ SOFTWARE.
 #ifndef __PARAMETERS_H__
 #define __PARAMETERS_H__
 
+const static char* DATA_DELIMITERS = " \t,;";
 const static int TOURNAMENT_SIZE = 50;
-//const static int MAX_NUMBER_OF_TABU_HITS = POPULATION_SIZE;
-
 const static float RATE_CROSSOVER = 0.2;
 const static float RATE_MUTATION = 0.8;
 const static float RATE_MUTATION_SWAP = 0.2;

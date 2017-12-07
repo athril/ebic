@@ -45,6 +45,8 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
 EBic::EBic(int num_gpus, int cols, int rows, float approx_trend_ratio, int negative_trends, int num_trends, float *data, std::vector<string> &row_headers, std::vector<string> &col_headers) 
       : NUM_GPUs(num_gpus), num_cols(cols), num_rows(rows), APPROX_TRENDS_RATIO(approx_trend_ratio), NEGATIVE_TRENDS_ENABLED(negative_trends), NUM_TRENDS(num_trends), data(data) {
 
+  cudaGetDeviceCount(&NUM_AVAILABLE_GPUs);
+  assert(NUM_AVAILABLE_GPUs>=NUM_GPUs);
   this->row_headers=&row_headers;
   this->col_headers=&col_headers;
 
@@ -71,7 +73,7 @@ EBic::EBic(int num_gpus, int cols, int rows, float approx_trend_ratio, int negat
   #pragma omp parallel num_threads(NUM_GPUs)
   {
     const int dev = omp_get_thread_num(); 
-    cudaSetDevice(dev);
+    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_data, gpu_args[dev].dev_data_split * this->num_cols * sizeof(float)) );
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_coverage, gpu_args[dev].dev_data_split * this->NUM_TRENDS * sizeof(int)) );  
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_fitness_array, (int)ceil((double)gpu_args[dev].dev_data_split/(double)BLOCKSIZE[1])* this->NUM_TRENDS * sizeof(int)) );
@@ -86,7 +88,7 @@ EBic::~EBic() {
   #pragma omp parallel num_threads(NUM_GPUs)
   {
     const int dev = omp_get_thread_num(); 
-    cudaSetDevice(dev);
+    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
     cudaFree(gpu_args[dev].dev_data);
     cudaFree(gpu_args[dev].dev_fitness_array);
     cudaFree(gpu_args[dev].dev_coverage);
@@ -107,7 +109,7 @@ void EBic::determine_fitness(problem_t *problem, float *fitness) {
   #pragma omp parallel num_threads(NUM_GPUs) 
   {
     const int dev = omp_get_thread_num(); 
-    cudaSetDevice(dev);
+    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_bicl_indices, (problem->num_trends+1) * sizeof(int)) );
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_compressed_biclusters, problem->size_indices * sizeof(int)) );
     gpuCheck( cudaMemcpyAsync(gpu_args[dev].dev_bicl_indices, problem->bicl_indices, (problem->num_trends+1)*sizeof(int), cudaMemcpyHostToDevice) );
@@ -117,7 +119,7 @@ void EBic::determine_fitness(problem_t *problem, float *fitness) {
   #pragma omp parallel num_threads(NUM_GPUs) 
   {
     const int dev = omp_get_thread_num(); 
-    cudaSetDevice(dev);
+    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
     dim3 dimBlock(BLOCKSIZE[0],BLOCKSIZE[1]); //[biclusters, rows]
     dim3 dimGrid( problem->num_trends, ceil((double)gpu_args[dev].dev_data_split/(double)BLOCKSIZE[1]));
     calculate_fitness<float><<< dimGrid, dimBlock, SHARED_MEMORY_SIZE*(sizeof(float)+sizeof(int)) >>> (SHARED_MEMORY_SIZE, EPSILON, gpu_args[dev].dev_bicl_indices, problem->num_trends, gpu_args[dev].dev_compressed_biclusters, gpu_args[dev].dev_data_split, this->num_cols, gpu_args[dev].dev_data, gpu_args[dev].dev_fitness_array);
@@ -126,7 +128,7 @@ void EBic::determine_fitness(problem_t *problem, float *fitness) {
   #pragma omp parallel num_threads(NUM_GPUs) 
   {
     const int dev = omp_get_thread_num(); 
-    cudaSetDevice(dev);
+    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
     gpuCheck( cudaMemcpy(fitness_array[dev], gpu_args[dev].dev_fitness_array, (int)ceil((double)gpu_args[dev].dev_data_split/(double)BLOCKSIZE[1])*problem->num_trends*sizeof(int), cudaMemcpyDeviceToHost) );
   }
   gpuCheck( cudaDeviceSynchronize() );
@@ -147,7 +149,7 @@ void EBic::determine_fitness(problem_t *problem, float *fitness) {
   #pragma omp parallel num_threads(NUM_GPUs) 
   {
     const int dev = omp_get_thread_num(); 
-    cudaSetDevice(dev);
+    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
     cudaFree(gpu_args[dev].dev_bicl_indices);
     cudaFree(gpu_args[dev].dev_compressed_biclusters);
   }
@@ -164,7 +166,7 @@ void EBic::get_final_biclusters(problem_t *problem) {
   #pragma omp parallel num_threads(NUM_GPUs)
   {
     const int dev = omp_get_thread_num();
-    cudaSetDevice(dev);
+    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_bicl_indices, (problem->num_trends+1) * sizeof(int)) );
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_compressed_biclusters, problem->size_indices * sizeof(int)) );
     gpuCheck( cudaMemcpyAsync(gpu_args[dev].dev_bicl_indices, problem->bicl_indices, (problem->num_trends+1)*sizeof(int), cudaMemcpyHostToDevice) );
@@ -174,7 +176,7 @@ void EBic::get_final_biclusters(problem_t *problem) {
   #pragma omp parallel num_threads(NUM_GPUs)
   {
     const int dev = omp_get_thread_num();
-    cudaSetDevice(dev);
+    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
     const int BLOCKSIZE[2]={1, SHARED_MEMORY_SIZE};
     dim3 dimBlock(BLOCKSIZE[0],BLOCKSIZE[1]); //[biclusters, rows]
     dim3 dimGrid( problem->num_trends, gpu_args[dev].dev_data_split);
