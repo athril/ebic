@@ -20,14 +20,22 @@ $ ./ebic [OPTIONS]
 To override any of default options extra arguments should be added:
 
 Options:
-  -i,--input TEXT             input file (required!)
-  -n,--iterations INT         number of iterations [default: 5000]
-  -b,--biclusters INT         number of biclusters [100]
-  -x,--overlap FLOAT          overlap threshold [0.75]
-  -g,--gpus INT               number of gpus [1]
-  -a,--approx FLOAT           approximate trends acceptance ratio [0.85]
-  -m,--negative-trends INT    negative trends [1]
-  -l,--log                    is logging enabled [false]
+
+*  -i,--input TEXT             input file (required!)
+
+*  -n,--iterations INT         number of iterations [default: 5000]
+
+*  -b,--biclusters INT         number of biclusters [100]
+
+*  -x,--overlap FLOAT          overlap threshold [0.75]
+
+*  -g,--gpus INT               number of gpus [1]
+
+*  -a,--approx FLOAT           approximate trends acceptance ratio [0.85]
+
+*  -t,--negative-trends INT    negative trends [1]
+
+*  -l,--log                    is logging enabled [false]
 
 
 ## Input
