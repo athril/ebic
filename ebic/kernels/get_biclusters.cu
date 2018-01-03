@@ -61,7 +61,7 @@ __global__ void get_biclusters(const int SHARED_MEM_SIZE,
     trend_increasing[threadIdx.y]=1;
 
   if (NEGATIVE_TRENDS_ENABLED) {
-    evaluate_trends<T>(bicl_indices, compressed_biclusters, num_rows, num_cols, data, trend_decreasing, trendvalue, EPSILON,-1);
+    evaluate_trends<T>(bicl_indices, compressed_biclusters, num_rows, num_cols, data, trend_decreasing, trendvalue, EPSILON, -1);
     if (trend_decreasing[threadIdx.y]<APPROX_TRENDS_RATIO*(bicl_indices[index_x+1]-bicl_indices[index_x])) {
       trend_decreasing[threadIdx.y]=0;
     } else {

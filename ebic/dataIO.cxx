@@ -30,19 +30,34 @@ SOFTWARE.
 #include <sstream>
 #include <iterator>
 #include "dataIO.hxx"
+#include "parameters.hxx"
+
+struct word_reader : std::ctype<char> {
+    word_reader(std::string const &delims) : std::ctype<char>(get_table(delims)) {}
+    static std::ctype_base::mask const* get_table(std::string const &delims) {
+        static std::vector<std::ctype_base::mask> rc(table_size, std::ctype_base::mask());
+
+        for (char ch : delims)
+            rc[ch] = std::ctype_base::space;
+        return &rc[0];
+    }
+};
 
 
 void load_data(string dataset_filename, vector<float> &input_data, int &num_rows, int &num_cols, vector<string> &row_headers, vector<string> &col_headers) {
   std::ifstream datafile(dataset_filename.c_str());
+  if (!datafile.good())
+    exit(1);
   std::string line;
   int rowid=0;
 
   std::getline(datafile,line);
   istringstream iss(line);
-
+  iss.imbue(std::locale(std::locale(), new word_reader(DATA_DELIMITERS)));
   std::vector<string> tokens{istream_iterator<string>{iss}, istream_iterator<string>{}};
+
   //check if the first header is empty
-  if (line.find_first_not_of("\t ")==0)
+  if (line.find_first_not_of(DATA_DELIMITERS)==0)
     tokens.erase(tokens.begin());
 
   num_cols=tokens.size();
@@ -52,6 +67,7 @@ void load_data(string dataset_filename, vector<float> &input_data, int &num_rows
 
   while (std::getline(datafile, line) ) {
     istringstream iss(line);
+    iss.imbue(std::locale(std::locale(), new word_reader(DATA_DELIMITERS)));
     std::vector<string> tokens{istream_iterator<string>{iss}, istream_iterator<string>{}};
     row_headers.push_back(tokens[0]);
     tokens.erase(tokens.begin());
@@ -61,5 +77,4 @@ void load_data(string dataset_filename, vector<float> &input_data, int &num_rows
   }
   //std::cout << "PROBLEM SIZE: " << num_rows << " " << num_cols << std::endl;
   datafile.close();
-
 }

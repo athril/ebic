@@ -1,10 +1,10 @@
-program_NAME := evobic
+program_NAME := ebic
 program_CXX_SRCS := $(wildcard *.cxx *.cu)
 program_C_OBJS := ${program_C_SRCS:.c=.o}
 program_CXX_OBJS := ${program_CXX_SRCS:.cpp=.o}
 program_OBJS := $(program_C_OBJS) $(program_CXX_OBJS)
 program_INCLUDE_DIRS := 
-program_LIBRARY_DIRS := /usr/local/cuda/lib 
+program_LIBRARY_DIRS := /usr/local/cuda/lib
 program_LIBRARIES := cuda
 
 
