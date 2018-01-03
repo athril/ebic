@@ -57,7 +57,7 @@
     <a class="current" href="./">Installation</a>
     <ul class="subnav">
             
-    <li class="toctree-l2"><a href="#ebic-prerequisites">ebic prerequisites</a></li>
+    <li class="toctree-l2"><a href="#ebic-prerequisites">EBIC prerequisites</a></li>
     
         <ul>
         
@@ -71,7 +71,7 @@
     <li class="toctree-l2"><a href="#gcc-46-installation">GCC 4.6+ installation</a></li>
     
 
-    <li class="toctree-l2"><a href="#ebic-compilation">ebic compilation</a></li>
+    <li class="toctree-l2"><a href="#ebic-compilation">EBIC compilation</a></li>
     
 
     </ul>
@@ -127,10 +127,10 @@
           <div role="main">
             <div class="section">
               
-                <h2 id="ebic-prerequisites">ebic prerequisites</h2>
-<p><em>ebic</em> requires CUDA Toolkit and C++11 environment to be installed. Please make sure that your computer may run CUDA.</p>
+                <h2 id="ebic-prerequisites">EBIC prerequisites</h2>
+<p><em>EBIC</em> requires CUDA Toolkit and C++11 environment to be installed. Please make sure that your computer may run CUDA.</p>
 <p>Find out your graphic card and check if it is supported on <a href="https://developer.nvidia.com/cuda-gpus">NVIDIA website</a>.</p>
-<p>You won't be able to run <em>ebic</em> if your graphic card is not supported.</p>
+<p>You won't be able to run <em>EBIC</em> if your graphic card is not supported.</p>
 <h3 id="nvidia-driver-installation">NVIDIA driver installation</h3>
 <p>Start with installing NVIDIA driver for your graphic card.</p>
 <p>Find the latest NVIDIA driver at <a href="http://www.nvidia.com/Download/index.aspx?lang=en-us">NVIDIA's Download Website</a></p>
@@ -139,13 +139,13 @@
 <h2 id="gcc-46-installation">GCC 4.6+ installation</h2>
 <p>Windows users may also require to install a GCC 4.6+ or newer compiler in order to run C++11 code.
 The easiest way is downloading the <a href="http://mingw-w64.org/doku.php/download#mingw-builds">MinGW-w64</a>.</p>
-<h2 id="ebic-compilation">ebic compilation</h2>
+<h2 id="ebic-compilation">EBIC compilation</h2>
 <p>In order to prepare a binary type:</p>
 <pre><code class="Shell">make
 </code></pre>
 
 <p>or</p>
-<pre><code class="Shell">nvcc -O3 -std=c++11 --expt-extended-lambda -Xcompiler -fopenmp --default-stream per-thread  main.cxx population.cxx dataIO.cxx ebic.cu -L/usr/local/cuda/lib -lcuda -o ebic
+<pre><code class="Shell">nvcc -O3 -std=c++11 --expt-extended-lambda -Xcompiler -fopenmp --default-stream per-thread  main.cxx population.cxx dataIO.cxx EBIC.cu -L/usr/local/cuda/lib -lcuda -o ebic
 </code></pre>
 
 <p>If the command completed successfully, you are ready to go!</p>

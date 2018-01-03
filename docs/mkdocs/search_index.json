@@ -2,23 +2,23 @@
     "docs": [
         {
             "location": "/", 
-            "text": "ebic\n\n\nebic\n is a next-generation biclustering algorithm based on artificial intelligence (AI).\n\nebic\n is probably the first algorithm capable of discovering the most challenging patterns (i.e. row-constant, column-constant, shift, scale, shift-scale and trend-preserving)\nIt is also one of the very few parallel biclustering algorithms that use at least one graphics processing unit (GPU) and is ready for big-data challenges.\n\n\nebic\n is mainly implemented in C++11. CUDA with OpenMP used for parallelization.", 
+            "text": "EBIC\n\n\nEBIC\n is a next-generation biclustering algorithm based on artificial intelligence (AI).\n\nEBIC\n is probably the first algorithm capable of discovering the most challenging patterns (i.e. row-constant, column-constant, shift, scale, shift-scale and trend-preserving)\nIt is also one of the very few parallel biclustering algorithms that use at least one graphics processing unit (GPU) and is ready for big-data challenges.\n\n\nEBIC\n is mainly implemented in C++11. CUDA with OpenMP used for parallelization.", 
             "title": "Home"
         }, 
         {
             "location": "/#ebic", 
-            "text": "ebic  is a next-generation biclustering algorithm based on artificial intelligence (AI). ebic  is probably the first algorithm capable of discovering the most challenging patterns (i.e. row-constant, column-constant, shift, scale, shift-scale and trend-preserving)\nIt is also one of the very few parallel biclustering algorithms that use at least one graphics processing unit (GPU) and is ready for big-data challenges.  ebic  is mainly implemented in C++11. CUDA with OpenMP used for parallelization.", 
-            "title": "ebic"
+            "text": "EBIC  is a next-generation biclustering algorithm based on artificial intelligence (AI). EBIC  is probably the first algorithm capable of discovering the most challenging patterns (i.e. row-constant, column-constant, shift, scale, shift-scale and trend-preserving)\nIt is also one of the very few parallel biclustering algorithms that use at least one graphics processing unit (GPU) and is ready for big-data challenges.  EBIC  is mainly implemented in C++11. CUDA with OpenMP used for parallelization.", 
+            "title": "EBIC"
         }, 
         {
             "location": "/installation/", 
-            "text": "ebic prerequisites\n\n\nebic\n requires CUDA Toolkit and C++11 environment to be installed. Please make sure that your computer may run CUDA.\n\n\nFind out your graphic card and check if it is supported on \nNVIDIA website\n.\n\n\nYou won't be able to run \nebic\n if your graphic card is not supported.\n\n\nNVIDIA driver installation\n\n\nStart with installing NVIDIA driver for your graphic card.\n\n\nFind the latest NVIDIA driver at \nNVIDIA's Download Website\n\n\nCUDA Toolkit installation\n\n\nFollow NVIDIA tutorial for \nCUDA\n. Install the latest supported CUDA Toolkit for your platform.\n\n\nGCC 4.6+ installation\n\n\nWindows users may also require to install a GCC 4.6+ or newer compiler in order to run C++11 code.\nThe easiest way is downloading the \nMinGW-w64\n.\n\n\nebic compilation\n\n\nIn order to prepare a binary type:\n\n\nmake\n\n\n\n\nor\n\n\nnvcc -O3 -std=c++11 --expt-extended-lambda -Xcompiler -fopenmp --default-stream per-thread  main.cxx population.cxx dataIO.cxx ebic.cu -L/usr/local/cuda/lib -lcuda -o ebic\n\n\n\n\nIf the command completed successfully, you are ready to go!", 
+            "text": "EBIC prerequisites\n\n\nEBIC\n requires CUDA Toolkit and C++11 environment to be installed. Please make sure that your computer may run CUDA.\n\n\nFind out your graphic card and check if it is supported on \nNVIDIA website\n.\n\n\nYou won't be able to run \nEBIC\n if your graphic card is not supported.\n\n\nNVIDIA driver installation\n\n\nStart with installing NVIDIA driver for your graphic card.\n\n\nFind the latest NVIDIA driver at \nNVIDIA's Download Website\n\n\nCUDA Toolkit installation\n\n\nFollow NVIDIA tutorial for \nCUDA\n. Install the latest supported CUDA Toolkit for your platform.\n\n\nGCC 4.6+ installation\n\n\nWindows users may also require to install a GCC 4.6+ or newer compiler in order to run C++11 code.\nThe easiest way is downloading the \nMinGW-w64\n.\n\n\nEBIC compilation\n\n\nIn order to prepare a binary type:\n\n\nmake\n\n\n\n\nor\n\n\nnvcc -O3 -std=c++11 --expt-extended-lambda -Xcompiler -fopenmp --default-stream per-thread  main.cxx population.cxx dataIO.cxx EBIC.cu -L/usr/local/cuda/lib -lcuda -o ebic\n\n\n\n\nIf the command completed successfully, you are ready to go!", 
             "title": "Installation"
         }, 
         {
             "location": "/installation/#ebic-prerequisites", 
-            "text": "ebic  requires CUDA Toolkit and C++11 environment to be installed. Please make sure that your computer may run CUDA.  Find out your graphic card and check if it is supported on  NVIDIA website .  You won't be able to run  ebic  if your graphic card is not supported.", 
-            "title": "ebic prerequisites"
+            "text": "EBIC  requires CUDA Toolkit and C++11 environment to be installed. Please make sure that your computer may run CUDA.  Find out your graphic card and check if it is supported on  NVIDIA website .  You won't be able to run  EBIC  if your graphic card is not supported.", 
+            "title": "EBIC prerequisites"
         }, 
         {
             "location": "/installation/#nvidia-driver-installation", 
@@ -37,8 +37,8 @@
         }, 
         {
             "location": "/installation/#ebic-compilation", 
-            "text": "In order to prepare a binary type:  make  or  nvcc -O3 -std=c++11 --expt-extended-lambda -Xcompiler -fopenmp --default-stream per-thread  main.cxx population.cxx dataIO.cxx ebic.cu -L/usr/local/cuda/lib -lcuda -o ebic  If the command completed successfully, you are ready to go!", 
-            "title": "ebic compilation"
+            "text": "In order to prepare a binary type:  make  or  nvcc -O3 -std=c++11 --expt-extended-lambda -Xcompiler -fopenmp --default-stream per-thread  main.cxx population.cxx dataIO.cxx EBIC.cu -L/usr/local/cuda/lib -lcuda -o ebic  If the command completed successfully, you are ready to go!", 
+            "title": "EBIC compilation"
         }, 
         {
             "location": "/usage/", 
@@ -62,18 +62,23 @@
         }, 
         {
             "location": "/examples/", 
-            "text": "Examples\n\n\nThe only parameter required in order to run \nebic\n is input file.\nAll other parameters are optional and could be modified by overriding a specific parameter.\n\n\nTo see available options:\n\n\n./ebic -h\n\n\n\n\nRun ebic for 10 iterations and return 5 biclusters only:\n\n\n./ebic -i input.txt -n 10 -b 5\n\n\n\n\nDo not allow negative trends:\n\n\n./ebic -i input.txt -m 0\n\n\n\n\nDo not allow approximate trends:\n\n\n./ebic -i input.txt -a 1", 
+            "text": "Examples\n\n\nThe only parameter required in order to run \nEBIC\n is input file.\nAll other parameters are optional and could be modified by overriding a specific parameter.\n\n\nTo see available options:\n\n\n./ebic -h\n\n\n\n\nRun \nEBIC\n for 10 iterations and return 5 biclusters only:\n\n\n./ebic -i input.txt -n 10 -b 5\n\n\n\n\nDo not allow negative trends:\n\n\n./ebic -i input.txt -t 0\n\n\n\n\nDo not allow approximate trends:\n\n\n./ebic -i input.txt -a 1", 
             "title": "Examples"
         }, 
         {
             "location": "/examples/#examples", 
-            "text": "The only parameter required in order to run  ebic  is input file.\nAll other parameters are optional and could be modified by overriding a specific parameter.  To see available options:  ./ebic -h  Run ebic for 10 iterations and return 5 biclusters only:  ./ebic -i input.txt -n 10 -b 5  Do not allow negative trends:  ./ebic -i input.txt -m 0  Do not allow approximate trends:  ./ebic -i input.txt -a 1", 
+            "text": "The only parameter required in order to run  EBIC  is input file.\nAll other parameters are optional and could be modified by overriding a specific parameter.  To see available options:  ./ebic -h  Run  EBIC  for 10 iterations and return 5 biclusters only:  ./ebic -i input.txt -n 10 -b 5  Do not allow negative trends:  ./ebic -i input.txt -t 0  Do not allow approximate trends:  ./ebic -i input.txt -a 1", 
             "title": "Examples"
         }, 
         {
             "location": "/releases/", 
-            "text": "Version 0.2\n\n\nUpdated scripts to handle integer and continuous data.\nAdding support for datasets with less than 10 columns.\n\n\nVersion 0.1\n\n\nFirst public release of ebic.", 
+            "text": "Version 0.4\n\n\nAdding support for input files with different delimiters.\nImproving usability of the algorithm (using the last available GPU).\n\n\nVersion 0.2\n\n\nUpdated scripts to handle integer and continuous data.\nAdding support for datasets with less than 10 columns.\n\n\nVersion 0.1\n\n\nFirst public release of ebic.", 
             "title": "Release Notes"
+        }, 
+        {
+            "location": "/releases/#version-04", 
+            "text": "Adding support for input files with different delimiters.\nImproving usability of the algorithm (using the last available GPU).", 
+            "title": "Version 0.4"
         }, 
         {
             "location": "/releases/#version-02", 
