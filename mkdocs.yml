@@ -1,7 +1,7 @@
 site_name: ebic
 site_url: http://athril.github.io/ebic
 site_author: Patryk Orzechowski
-site_description: Documentation for ebic, a next generation AI-based parallel biclustering algorithm.
+site_description: Documentation for EBIC, a next generation AI-based parallel biclustering algorithm.
 
 repo_url: https://github.com/athril/ebic
 edit_uri: edit/master/docs_sources/

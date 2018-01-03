@@ -37,7 +37,7 @@ SOFTWARE.
 #include "dataIO.hxx"
 #include "parameters.hxx"
 
-
+void checkAvailableGPUs(int);
 
 
 class EBic {
@@ -69,8 +69,7 @@ class EBic {
 
 
   public:
-    //EBic(int num_gpus, int cols, int rows, float approx_trends_ratio, int negative_trends, int trends_population_size, std::vector<float> &data, std::vector<string> &row_headers, std::vector<string> &col_headers);
-    EBic(int num_gpus, int cols, int rows, float approx_trends_ratio, int negative_trends, int trends_population_size, float *data, std::vector<string> &row_headers, std::vector<string> &col_headers);
+    EBic(int num_gpus, float approx_trends_ratio, int negative_trends, int trends_population_size, float *data, int rows, int cols, std::vector<string> &row_headers, std::vector<string> &col_headers);
     void get_final_biclusters(problem_t *problem);
     void print_biclusters(string results_filename);
     void print_biclusters_blocks(string results_filename);

@@ -25,13 +25,13 @@ SOFTWARE.
 
 #include <iostream>
 #include <sstream>
+#include <cfloat>
 #include <assert.h>
 #include <string.h>
 #include "CLI11.hpp"
 #include "dataIO.hxx"
 #include "ebic.hxx"
-//#include <libgen.h>
-
+#include <chrono>
 
 
 using namespace std;
@@ -51,7 +51,6 @@ int main(int argc, char **argv) {
   int negative_trends_enabled=1;
   float approx_trends_ratio=0.85;
   bool log_enabled=false;
-
   app.add_option("-i,--input", input_file, "input file")->required();
   //app.add_option("-o,--output", output_file, "output file");
   app.add_option("-n,--iterations", max_iterations, "number of iterations [default: 5000]");
@@ -59,7 +58,7 @@ int main(int argc, char **argv) {
   app.add_option("-x,--overlap", overlap_threshold, "overlap threshold [0.75]");
   app.add_option("-g,--gpus", number_of_gpus, "number of gpus [1]");
   app.add_option("-a,--approx", approx_trends_ratio, "approximate trends allowance [0.85]");
-  app.add_option("-m,--negative-trends", negative_trends_enabled, "are negative trends enabled [1]");
+  app.add_option("-t,--negative-trends", negative_trends_enabled, "are negative trends enabled [1]");
   app.add_flag("-l,--log", log_enabled, "is logging enabled [false]");
 
 
@@ -85,15 +84,18 @@ int main(int argc, char **argv) {
     int trends_population_size = MIN(pow(2,num_columns-1),1600);
     float *data = &input_data[0];
 
-    EBic ebic(number_of_gpus, num_columns, num_rows, approx_trends_ratio, negative_trends_enabled, trends_population_size, data, row_headers, col_headers);
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    EBic ebic(number_of_gpus, approx_trends_ratio, negative_trends_enabled, trends_population_size, data, num_rows, num_columns, row_headers, col_headers);
 
     cout << "Running ebic with the following parameters: ./ebic -i " << input_file << " -n " << max_iterations << " -b " << num_biclusters << " -x " << overlap_threshold << " -a " << approx_trends_ratio << " -m " << negative_trends_enabled << endl;
 
     perform_evolutions(ebic, input_file, max_iterations, num_biclusters, num_columns, overlap_threshold, trends_population_size, log_enabled);
 
+    std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
+    std::cout << "Time elapsed: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << " microseconds" << std::endl;
 
     ebic.print_biclusters_synthformat(result_filename.str());
-    ebic.print_biclusters_blocks(result_filename2.str());
+    //ebic.print_biclusters_blocks(result_filename2.str());
     //ebic.print_biclusters("results.txt");
 
   } catch (const CLI::ParseError &e) {

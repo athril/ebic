@@ -55,8 +55,8 @@ void load_data(string dataset_filename, vector<float> &input_data, int &num_rows
   istringstream iss(line);
   iss.imbue(std::locale(std::locale(), new word_reader(DATA_DELIMITERS)));
   std::vector<string> tokens{istream_iterator<string>{iss}, istream_iterator<string>{}};
+
   //check if the first header is empty
-//  if (line.find_first_not_of("\t ,;")==0)
   if (line.find_first_not_of(DATA_DELIMITERS)==0)
     tokens.erase(tokens.begin());
 

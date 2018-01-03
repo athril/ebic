@@ -30,11 +30,11 @@ SOFTWARE.
 #include <algorithm>
 #include <cfloat>
 #include <iterator>
+#include <set>
 #include <assert.h>
 #include <libgen.h>
 #include <unordered_set>
-#include <unordered_map>
-#include <boost/functional/hash.hpp>
+#include <string.h>
 #include "parameters.hxx"
 #include "ebic.hxx"
 
@@ -77,7 +77,9 @@ bool crossover(chromosome &parent_a, chromosome &parent_b, chromosome &offspring
   //log << "CROSSOVER: [" << parent_a << " (" <<cut_a << ")" << " x " << parent_b;
   std::copy_n(parent_a.begin(), cut_a, std::back_inserter(offspring_a));
   //std::copy_n(parent_b.begin(), cut_b, std::back_inserter(offspring_b));
+#ifdef DEBUG
   l << "[" << parent_a << "x " << parent_b << "]-X->";
+#endif
   //log << "START:" << offspring_a << endl;
 
   for (auto it=parent_b.begin()+cut_b; it!=parent_b.end(); ++it) {
@@ -96,7 +98,9 @@ bool mutation_substitution( chromosome &chromo, int num_columns, logger &l) {
   auto mutation_value = rand() % num_columns;
   if (std::find(chromo.begin(), chromo.end(), mutation_value) != chromo.end())
     return false;
+#ifdef DEBUG
   l << "[" << chromo << "]" << "-@->";
+#endif
   chromo.at(mutation_point)=mutation_value;
   //log << "->" << chromo << endl;  
   l << "[" << chromo << "]";
@@ -109,7 +113,9 @@ bool mutation_insertion( chromosome &chromo, int num_columns, logger &l ) {
   auto mutation_value = rand() % num_columns;
   if (std::find(chromo.begin(), chromo.end(), mutation_value) != chromo.end())
     return false;
+#ifdef DEBUG
   l << "[" << chromo << "]" << "-I->";
+#endif
   chromo.insert(chromo.begin()+mutation_point,mutation_value);
   //log << "->" << chromo << endl;
   l << "[" << chromo << "]";
@@ -121,18 +127,24 @@ bool mutation_deletion( chromosome &chromo, logger &l ) {
   if (chromo.size()<=2)
     return false;
   // log << "MUTATION_DEL: " << chromo;
+#ifdef DEBUG
   l << "[" << chromo << "]" << "-D->";  
+#endif
   auto mutation_point = rand() % chromo.size();
   chromo.erase(chromo.begin()+mutation_point);
   //log << "->" << chromo << endl;
+#ifdef DEBUG
   l << "[" << chromo << "]";
+#endif
   return true;
 }
 
 
 bool mutation_swap( chromosome &chromo, logger &l ) {
   // log << "MUTATION_SWP: " << chromo;
+#ifdef DEBUG
   l << "[" << chromo << "]" << "-S->";
+#endif
   auto mutation_point1 = rand() % chromo.size();
   auto mutation_point2 = rand() % chromo.size();
   if (mutation_point1==mutation_point2)
@@ -141,7 +153,9 @@ bool mutation_swap( chromosome &chromo, logger &l ) {
   chromo.at(mutation_point1)=chromo.at(mutation_point2);
   chromo.at(mutation_point2)=tmp;
   //log << "->" << chromo << endl;
+#ifdef DEBUG
   l << "[" << chromo << "]";
+#endif
   return true;
 }
 
@@ -300,9 +314,9 @@ void perform_evolutions(EBic &ebic, string input_file, int MAX_ITERATIONS, int M
       int id=tournament_selection( fitness, penalties, TOURNAMENT_SIZE, population_old, POPULATION_SIZE, MAX_NUMBER_BICLUSTERS);
       chromosome chromo = population_old.at( id );
       bool added=true;
-
+#ifdef DEBUG
       tmp_log << " (" << fitness[id] << ")";
-
+#endif
       if ( (float)rand()/(float)RAND_MAX < RATE_CROSSOVER) {
         int id2=tournament_selection( fitness, penalties, TOURNAMENT_SIZE, population_old, POPULATION_SIZE, MAX_NUMBER_BICLUSTERS);
         tmp_log << " (" << fitness[id2] << ")";
@@ -332,13 +346,24 @@ void perform_evolutions(EBic &ebic, string input_file, int MAX_ITERATIONS, int M
         tabu_approved_addition(population_new, chromo, tabu_list, penalties);
       } else {
         tabu_hits++;
-	      log << "X";
+#ifdef DEBUG
+        log << "X";
+#endif
+
       }
+
+
+
+#ifdef DEBUG
       tmp_log.str("");
       tmp_log.clear();
+#endif
 
     } // end while (population per bicluster)
+
+#ifdef DEBUG
     log << endl;
+#endif
 
     for (int i=0; i<POPULATION_SIZE; i++)  {
       prev_fitness[i]=fitness[i];
@@ -390,17 +415,23 @@ void perform_evolutions(EBic &ebic, string input_file, int MAX_ITERATIONS, int M
     for (auto t=toplist.begin(); t!=toplist.end() && toplist.size()>REPRODUCTION_SIZE; ++t) {
       toplist.erase(t);
     }
-
+#ifdef DEBUG
     log << "TOPLIST " << "[" << toplist.size() << "] - iteration: "<< iteration << endl;
+#endif
     int counter=0;
     for (auto t=toplist.rbegin(); t!=toplist.rend(); ++t, ++counter) {
     //for (auto t : toplist) {
+#ifdef DEBUG
         log << t->first << "->" << t->second << " ("<< t->second.size() << ")"<< endl;
+#endif
+
         if (counter>MAX_NUMBER_BICLUSTERS)
             break;
     }
-    log << endl;
 
+#ifdef DEBUG
+    log << endl;
+#endif
 
     population_old.clear();
     population_old=population_new;
@@ -425,21 +456,30 @@ void perform_evolutions(EBic &ebic, string input_file, int MAX_ITERATIONS, int M
 */  
     }
     population_new.clear();
+#ifdef DEBUG
     log << "TABU list size:" <<tabu_list.size() << endl; 
+#endif
     if (tabu_hits>=MAX_NUMBER_OF_TABU_HITS)
       break;
     for (int i=0; i<num_columns; i++) {
+#ifdef DEBUG
         log << penalties[i] << " ";
+#endif
         penalties[i]=0;
     }
+
+#ifdef DEBUG
     log << endl;
     log << "--------------------------------"<<endl;
+#endif
+
  }
+#ifdef DEBUG
   log << "TOPLIST - final biclusters: " << endl;
   for (auto topbi : toplist) {
     log << topbi.first << "->" << topbi.second << " ("<< topbi.second.size() << ")"<< endl;
   }
-
+#endif
   for (auto t=toplist.rbegin(); t!=toplist.rend(); ++t) {
     population_new.push_back(t->second);
     if (population_new.size()>=MAX_NUMBER_BICLUSTERS)
@@ -450,11 +490,10 @@ void perform_evolutions(EBic &ebic, string input_file, int MAX_ITERATIONS, int M
   compressed_ruleset=new int[size_indices];
   array_inserter(population_new, rules_indices, compressed_ruleset);
 
-  //problem = {MIN((int)population_new.size(), MAX_NUMBER_BICLUSTERS), rules_indices, size_indices, compressed_ruleset, NUM_ROWS, NUM_COLUMNS, data, row_headers, col_headers};
   problem = {MIN((int)population_new.size(), MAX_NUMBER_BICLUSTERS), rules_indices, size_indices, compressed_ruleset};//, NUM_ROWS, NUM_COLUMNS, data, row_headers, col_headers};
-  //problem = {(int)population_new.size(), rules_indices, size_indices, compressed_ruleset};//, NUM_ROWS, NUM_COLUMNS, data, row_headers, col_headers};
   ebic.get_final_biclusters(&problem);
 
+#ifdef DEBUG
   if (log_enabled) {
     std::stringstream log_name;
     log_name << basename(strdup(input_file.c_str())) <<"-log";
@@ -463,7 +502,7 @@ void perform_evolutions(EBic &ebic, string input_file, int MAX_ITERATIONS, int M
     log_file << log.str();
     log_file.close();
   }
-
+#endif
   cout << "Results were written to '" << input_file << "-blocks' and '" << input_file << "-res' files." << endl;
 
   return;
