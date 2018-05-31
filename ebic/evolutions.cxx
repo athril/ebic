@@ -1,6 +1,6 @@
 /***
 
-Copyright (c) 2017 Patryk Orzechowski
+Copyright (c) 2017-present Patryk Orzechowski
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -436,7 +436,7 @@ void perform_evolutions(EBic &ebic, string input_file, int MAX_ITERATIONS, int M
     population_old.clear();
     population_old=population_new;
     population_new.clear();
-    if (!(iteration % 1000)) {
+//    if (!(iteration % 1000)) {
       cout << "Iteration: " << iteration << endl;
 /*
 #ifdef DEBUG_MODE
@@ -454,7 +454,7 @@ void perform_evolutions(EBic &ebic, string input_file, int MAX_ITERATIONS, int M
     }
 #endif
 */  
-    }
+//    }
     population_new.clear();
 #ifdef DEBUG
     log << "TABU list size:" <<tabu_list.size() << endl; 

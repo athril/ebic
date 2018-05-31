@@ -1,6 +1,6 @@
 /***
 
-Copyright (c) 2017 Patryk Orzechowski
+Copyright (c) 2017-present Patryk Orzechowski
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -45,15 +45,18 @@ class EBic {
   const int num_rows;               // number of rows in the input matrix
   const float* data;                // input matrix
   const int NUM_GPUs;               // determines number of GPUs used by ebic
-  int NUM_AVAILABLE_GPUs;     // determines number of devices available
-  int SHARED_MEMORY_SIZE;
-  const float APPROX_TRENDS_RATIO;
-  const int NEGATIVE_TRENDS_ENABLED;
-  int NUM_TRENDS;
+  int NUM_AVAILABLE_GPUs;           // determines number of devices available
+  int SHARED_MEMORY_SIZE;           // stores the size of shared memory
+  const float APPROX_TRENDS_RATIO;  // determines what percentage of columns in bicluster should preserve the trend
+  const int NEGATIVE_TRENDS_ENABLED;// determines if negatively correlated patterns should be included
+  int NUM_TRENDS;                   // number of biclusters
+  float MISSING_VALUE;              // stores encoding of a missing value
   int **fitness_array, **coverage;
   vector<string> *row_headers;
   vector<string> *col_headers;
   problem_t problem;
+
+
 
 
   struct gpu_arguments {
@@ -69,9 +72,10 @@ class EBic {
 
 
   public:
-    EBic(int num_gpus, float approx_trends_ratio, int negative_trends, int trends_population_size, float *data, int rows, int cols, std::vector<string> &row_headers, std::vector<string> &col_headers);
+    EBic(int num_gpus, float approx_trends_ratio, int negative_trends, int trends_population_size, float missing_value, float *data, int rows, int cols, std::vector<string> &row_headers, std::vector<string> &col_headers);
+
     void get_final_biclusters(problem_t *problem);
-    void print_biclusters(string results_filename);
+    void print_biclusters_r(string results_filename);
     void print_biclusters_blocks(string results_filename);
     void print_biclusters_synthformat(string results_filename);
     void determine_fitness(problem_t *problem, float *fitness);

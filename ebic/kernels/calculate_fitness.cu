@@ -31,6 +31,7 @@ SOFTWARE.
 template <typename T>
 __global__ void calculate_fitness(int SHARED_MEM_SIZE,
                         const float EPSILON,
+                        float MISSING_VALUE,
                         int *bicl_indices,
                         int size_indices,
                         int *compressed_biclusters,
@@ -38,34 +39,34 @@ __global__ void calculate_fitness(int SHARED_MEM_SIZE,
                         int num_cols,
                         T *data,
                         int *fitness_array) {
-  long long int index_x = blockIdx.x * blockDim.x + threadIdx.x;    //block of bicluster
-  long long int index_y = blockIdx.y * blockDim.y + threadIdx.y;    //block of row
+  long long int index_x = blockIdx.x * blockDim.x + threadIdx.x;    //block of row
+  long long int index_y = blockIdx.y * blockDim.y + threadIdx.y;    //block of bicluster
 
   extern __shared__ int memory[];
   int *trendcheck=memory;
   T *trendvalue = (T*)&trendcheck[SHARED_MEM_SIZE];
 
 
-  evaluate_trends(bicl_indices, compressed_biclusters, num_rows, num_cols, data, trendcheck, trendvalue, EPSILON);
+  evaluate_trends(bicl_indices, compressed_biclusters, num_rows, num_cols, data, trendcheck, trendvalue, EPSILON, MISSING_VALUE);
 
-  if (trendcheck[threadIdx.y]<(bicl_indices[index_x+1]-bicl_indices[index_x])) {
-    trendcheck[threadIdx.y]=0;
+  if (trendcheck[threadIdx.x]<(bicl_indices[index_y+1]-bicl_indices[index_y])) {
+    trendcheck[threadIdx.x]=0;
   }
   else {
-    trendcheck[threadIdx.y]=1;
+    trendcheck[threadIdx.x]=1;
   }
   __syncthreads();
 
 
-  for(int offset = blockDim.y/2; offset > 0;offset >>= 1) {
-    if(threadIdx.y < offset && index_y<num_rows) {
-      trendcheck[threadIdx.y] += trendcheck[threadIdx.y+offset];
+  for(int offset = blockDim.x/2; offset > 0;offset >>= 1) {
+    if(threadIdx.x < offset && index_x<num_rows) {
+      trendcheck[threadIdx.x] += trendcheck[threadIdx.x+offset];
     }
     __syncthreads();
   }
 
-  if (threadIdx.y==0 && index_y<num_rows) {
-    fitness_array[blockIdx.y*size_indices+index_x]=trendcheck[0];
+  if (threadIdx.x==0 && index_x<num_rows) {
+    fitness_array[blockIdx.x*size_indices+index_y]=trendcheck[0];
   }
 }
 

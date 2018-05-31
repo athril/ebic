@@ -33,6 +33,7 @@ __global__ void get_biclusters(const int SHARED_MEM_SIZE,
                         const float APPROX_TRENDS_RATIO,
                         const int NEGATIVE_TRENDS_ENABLED,
                         const float EPSILON,
+                        float MISSING_VALUE,
                         int num_biclusters,
                         int *bicl_indices,
                         int size_indices,
@@ -47,31 +48,31 @@ __global__ void get_biclusters(const int SHARED_MEM_SIZE,
   //float *trendvalue=(float*)&trend_decreasing[SHARED_MEM_SIZE];
   T *trendvalue=(T*)&trend_decreasing[SHARED_MEM_SIZE];
 
-  long long int index_x = blockIdx.x * blockDim.x + threadIdx.x;    //block of bicluster
-  long long int index_y = blockIdx.y * blockDim.y + threadIdx.y;    //block of row
+  long long int index_x = blockIdx.x * blockDim.x + threadIdx.x;    //block of row
+  long long int index_y = blockIdx.y * blockDim.y + threadIdx.y;    //block of bicluster
 
 
-  evaluate_trends<T>(bicl_indices, compressed_biclusters, num_rows, num_cols, data, trend_increasing, trendvalue, EPSILON);
+  evaluate_trends<T>(bicl_indices, compressed_biclusters, num_rows, num_cols, data, trend_increasing, trendvalue, EPSILON, MISSING_VALUE);
 
 
 
-  if (trend_increasing[threadIdx.y]<APPROX_TRENDS_RATIO*(bicl_indices[index_x+1]-bicl_indices[index_x])) {
-    trend_increasing[threadIdx.y]=0;
+  if (trend_increasing[threadIdx.x]<APPROX_TRENDS_RATIO*(bicl_indices[index_y+1]-bicl_indices[index_y])) {
+    trend_increasing[threadIdx.x]=0;
   } else
-    trend_increasing[threadIdx.y]=1;
+    trend_increasing[threadIdx.x]=1;
 
   if (NEGATIVE_TRENDS_ENABLED) {
-    evaluate_trends<T>(bicl_indices, compressed_biclusters, num_rows, num_cols, data, trend_decreasing, trendvalue, EPSILON, -1);
-    if (trend_decreasing[threadIdx.y]<APPROX_TRENDS_RATIO*(bicl_indices[index_x+1]-bicl_indices[index_x])) {
-      trend_decreasing[threadIdx.y]=0;
+    evaluate_trends<T>(bicl_indices, compressed_biclusters, num_rows, num_cols, data, trend_decreasing, trendvalue, EPSILON, MISSING_VALUE,-1);
+    if (trend_decreasing[threadIdx.x]<APPROX_TRENDS_RATIO*(bicl_indices[index_y+1]-bicl_indices[index_y])) {
+      trend_decreasing[threadIdx.x]=0;
     } else {
-      trend_decreasing[threadIdx.y]=1;
+      trend_decreasing[threadIdx.x]=1;
     }
   }
   __syncthreads();
 
-  if (index_y<num_rows && index_x<num_biclusters) {
-    coverage[index_y+num_rows*index_x]=trend_increasing[threadIdx.y]|trend_decreasing[threadIdx.y];
+  if (index_x<num_rows && index_y<num_biclusters) {
+    coverage[index_x+num_rows*index_y]=trend_increasing[threadIdx.x]|trend_decreasing[threadIdx.x];
   }
 }
 

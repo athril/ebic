@@ -1,6 +1,6 @@
 /***
 
-Copyright (c) 2017 Patryk Orzechowski
+Copyright (c) 2017-present Patryk Orzechowski
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -51,6 +51,8 @@ int main(int argc, char **argv) {
   int negative_trends_enabled=1;
   float approx_trends_ratio=0.85;
   bool log_enabled=false;
+  float missing_value=FLT_MAX;
+
   app.add_option("-i,--input", input_file, "input file")->required();
   //app.add_option("-o,--output", output_file, "output file");
   app.add_option("-n,--iterations", max_iterations, "number of iterations [default: 5000]");
@@ -59,14 +61,17 @@ int main(int argc, char **argv) {
   app.add_option("-g,--gpus", number_of_gpus, "number of gpus [1]");
   app.add_option("-a,--approx", approx_trends_ratio, "approximate trends allowance [0.85]");
   app.add_option("-t,--negative-trends", negative_trends_enabled, "are negative trends enabled [1]");
+  app.add_option("-m,--missing_value", missing_value, "numeric representation of missing value [MAX]");
+
   app.add_flag("-l,--log", log_enabled, "is logging enabled [false]");
 
 
   try {
     app.parse(argc, argv);
-    std::stringstream result_filename,result_filename2;
-    result_filename << basename(strdup(input_file.c_str())) <<"-res";
-    result_filename2 << basename(strdup(input_file.c_str())) <<"-blocks";
+    std::stringstream result_filename,result_filename2,result_filename3;
+    result_filename << strdup(input_file.c_str()) <<"-res";
+    result_filename2 << strdup(input_file.c_str()) <<"-blocks";
+    result_filename3 << strdup(input_file.c_str()) <<"-r";
 
     //setting all parameters
     int num_rows, num_columns;
@@ -75,8 +80,8 @@ int main(int argc, char **argv) {
 
     //loading dataset and assessing its size
     load_data(input_file, input_data, num_rows, num_columns, row_headers, col_headers);
-    if (num_columns<=10) 
-      cerr << "In order to exploit the full potential of ebic the dataset needs to have at least 20 columns." << endl;
+    if (num_columns<=20) 
+      cerr << "In order to exploit the full potential of EBIC the dataset needs to have at least 20 columns." << endl;
 
     //srand(time(NULL));
     srand(1);
@@ -85,9 +90,10 @@ int main(int argc, char **argv) {
     float *data = &input_data[0];
 
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    EBic ebic(number_of_gpus, approx_trends_ratio, negative_trends_enabled, trends_population_size, data, num_rows, num_columns, row_headers, col_headers);
+    //EBic ebic(number_of_gpus, approx_trends_ratio, negative_trends_enabled, trends_population_size, data, num_rows, num_columns, row_headers, col_headers);
+    EBic ebic(number_of_gpus, approx_trends_ratio, negative_trends_enabled, trends_population_size, missing_value, data, num_rows, num_columns, row_headers, col_headers);
 
-    cout << "Running ebic with the following parameters: ./ebic -i " << input_file << " -n " << max_iterations << " -b " << num_biclusters << " -x " << overlap_threshold << " -a " << approx_trends_ratio << " -m " << negative_trends_enabled << endl;
+    cout << "Running ebic with the following parameters: ./ebic -i " << input_file << " -n " << max_iterations << " -b " << num_biclusters << " -x " << overlap_threshold << " -a " << approx_trends_ratio << " -t " << negative_trends_enabled << endl;
 
     perform_evolutions(ebic, input_file, max_iterations, num_biclusters, num_columns, overlap_threshold, trends_population_size, log_enabled);
 
@@ -95,8 +101,8 @@ int main(int argc, char **argv) {
     std::cout << "Time elapsed: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << " microseconds" << std::endl;
 
     ebic.print_biclusters_synthformat(result_filename.str());
-    //ebic.print_biclusters_blocks(result_filename2.str());
-    //ebic.print_biclusters("results.txt");
+    ebic.print_biclusters_blocks(result_filename2.str());
+    ebic.print_biclusters_r(result_filename3.str());
 
   } catch (const CLI::ParseError &e) {
     return app.exit(e);

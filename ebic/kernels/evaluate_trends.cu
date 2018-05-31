@@ -35,23 +35,26 @@ __device__ void evaluate_trends(int *bicl_indices,
                         int *trendcheck,
                         float *trendvalue,
                         const float EPSILON,
+                        float MISSING_VALUE,
                         int increasing=1) {
   long long int index_x = blockIdx.x * blockDim.x + threadIdx.x;    //block of bicluster
   long long int index_y = blockIdx.y * blockDim.y + threadIdx.y;    //block of row
 
-  trendcheck[threadIdx.y]=0;
-  trendvalue[threadIdx.y]=0;
+  trendcheck[threadIdx.x]=0;
+  trendvalue[threadIdx.x]=0;
 
-  if (index_y<num_rows ) {
-      trendcheck[threadIdx.y] = 1;
-      trendvalue[threadIdx.y] = data[compressed_biclusters[bicl_indices[index_x]]+num_cols*index_y];
+  if (index_x<num_rows ) {
+      trendcheck[threadIdx.x] = 1;
+      trendvalue[threadIdx.x] = data[compressed_biclusters[bicl_indices[index_y]]+num_cols*index_x];
   }
   __syncthreads();
-  if (index_y<num_rows ) {
-      for(int compressedId=bicl_indices[index_x]+1; compressedId<bicl_indices[index_x+1]; ++compressedId) {
+  if (index_x<num_rows ) {
+      for(int compressedId=bicl_indices[index_y]+1; compressedId<bicl_indices[index_y+1]; ++compressedId) {
         int pos=compressed_biclusters[compressedId];
-        trendcheck[threadIdx.y] += (increasing*(data[pos+num_cols*index_y]+EPSILON-trendvalue[threadIdx.y])>= 0);
-        trendvalue[threadIdx.y] = data[pos+num_cols*index_y];
+//        trendcheck[threadIdx.x] += (increasing*(data[pos*num_rows+index_x]+EPSILON-trendvalue[threadIdx.x])>= 0 && data[pos*num_rows+index_x]!=MISSING_VALUE);
+        trendcheck[threadIdx.x] += (increasing*(data[pos+num_cols*index_x]+EPSILON-trendvalue[threadIdx.x])>= 0 && data[pos+num_cols*index_x]!=MISSING_VALUE);
+//        trendvalue[threadIdx.x] = data[pos*num_rows+index_x];
+        trendvalue[threadIdx.x] = data[pos+num_cols*index_x];
         __syncthreads();
       }
   }
