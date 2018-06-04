@@ -57,11 +57,13 @@ EBic::EBic(int num_gpus, float approx_trend_ratio, int negative_trends, int num_
   const int BLOCKSIZE[2]={SHARED_MEMORY_SIZE,1};
 
   int remaining_rows=num_rows;
+  int rows_covered=0;
   for (int dev=0; dev<NUM_GPUs; ++dev) {
     gpu_args[dev].dev_data_split=MIN(ceil((double)this->num_rows/(double)NUM_GPUs), remaining_rows);//problem->num_rows/NUM_GPUs;
-    gpu_args[dev].dev_data_pos=dev*gpu_args[dev].dev_data_split;
+    gpu_args[dev].dev_data_pos=rows_covered;//dev*gpu_args[dev].dev_data_split;
+    rows_covered+=gpu_args[dev].dev_data_split;
     remaining_rows-=gpu_args[dev].dev_data_split;
-//    cout << "Splitting data of " << this->num_rows<< " rows: device " << dev <<": from "<< gpu_args[dev].dev_data_pos << " includes " << gpu_args[dev].dev_data_split << " samples. Fitness starts from " <<  (int)ceil((double)gpu_args[dev].dev_data_pos/(double)BLOCKSIZE[0])*num_trends << " with " << (int)ceil((double)gpu_args[dev].dev_data_split/(double)BLOCKSIZE[0])*num_trends<< endl;
+    cout << "Splitting data of " << this->num_rows<< " rows: device " << dev <<": from "<< gpu_args[dev].dev_data_pos << " includes " << gpu_args[dev].dev_data_split << " samples. Fitness starts from " <<  (int)ceil((double)gpu_args[dev].dev_data_pos/(double)BLOCKSIZE[0])*num_trends << " with " << (int)ceil((double)gpu_args[dev].dev_data_split/(double)BLOCKSIZE[0])*num_trends<< endl;
   }
 
   for (int dev=0; dev<NUM_GPUs; ++dev) {
@@ -78,6 +80,7 @@ EBic::EBic(int num_gpus, float approx_trend_ratio, int negative_trends, int num_
     cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_data, gpu_args[dev].dev_data_split * this->num_cols * sizeof(float)) );
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_coverage, gpu_args[dev].dev_data_split * this->NUM_TRENDS * sizeof(int)) );  
+//    gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_fitness_array, (int)ceil((double)gpu_args[dev].dev_data_split/(double)BLOCKSIZE[0])* this->NUM_TRENDS * sizeof(int)) );
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_fitness_array, (int)ceil((double)gpu_args[dev].dev_data_split/(double)BLOCKSIZE[0])* this->NUM_TRENDS * sizeof(int)) );
     gpuCheck( cudaMemcpyAsync(gpu_args[dev].dev_data, data+gpu_args[dev].dev_data_pos*this->num_cols, gpu_args[dev].dev_data_split*this->num_cols*sizeof(float), cudaMemcpyHostToDevice ) );
   }
@@ -124,7 +127,6 @@ void EBic::determine_fitness(problem_t *problem, float *fitness) {
     cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
     dim3 dimBlock(BLOCKSIZE[0],BLOCKSIZE[1]); //[biclusters, rows]
     dim3 dimGrid( ceil((double)gpu_args[dev].dev_data_split/(double)BLOCKSIZE[0]), problem->num_trends);
-    //calculate_fitness<float><<< dimGrid, dimBlock, SHARED_MEMORY_SIZE*(sizeof(float)+sizeof(int)) >>> (SHARED_MEMORY_SIZE, EPSILON, gpu_args[dev].dev_bicl_indices, problem->num_trends, gpu_args[dev].dev_compressed_biclusters, gpu_args[dev].dev_data_split, this->num_cols, gpu_args[dev].dev_data, gpu_args[dev].dev_fitness_array);
     calculate_fitness<float><<< dimGrid, dimBlock, SHARED_MEMORY_SIZE*(sizeof(float)+sizeof(int)) >>> (SHARED_MEMORY_SIZE, EPSILON, MISSING_VALUE, gpu_args[dev].dev_bicl_indices, problem->num_trends, gpu_args[dev].dev_compressed_biclusters, gpu_args[dev].dev_data_split, this->num_cols, gpu_args[dev].dev_data, gpu_args[dev].dev_fitness_array);
   }
 
@@ -136,13 +138,12 @@ void EBic::determine_fitness(problem_t *problem, float *fitness) {
   }
   gpuCheck( cudaDeviceSynchronize() );
   //printf("\n-----------------------------------------------------------------------------------\n");
-  
-  
+
+
   for (int i=0; i<problem->num_trends; ++i) {
     for (int dev=0; dev<NUM_GPUs; ++dev) {
       for (int j=0; j<(int)ceil((double)gpu_args[dev].dev_data_split/(double)BLOCKSIZE[0]); ++j) {
         fitness[i]+=fitness_array[dev][problem->num_trends*j+i];
-//        fitness[i]+=fitness_array[dev][(int)ceil((double)gpu_args[dev].dev_data_split/(double)BLOCKSIZE[0])*i+j];
       }
     }
 //    printf("[%3.2f x %d =", fitness[i], problem->bicl_indices[i+1]-problem->bicl_indices[i]);
@@ -242,7 +243,7 @@ void EBic::print_biclusters_blocks(string results_filename) {
     for (int dev=0; dev<NUM_GPUs; ++dev) {
       for (int j=0; j<gpu_args[dev].dev_data_split; j++) {
         if (coverage[dev][i*gpu_args[dev].dev_data_split+j]) {
-          row_indices.push_back(dev*gpu_args[dev].dev_data_pos+j);
+          row_indices.push_back(dev*gpu_args[dev].dev_data_split+j);   ///pos ???
         }
       }
     }
