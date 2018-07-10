@@ -51,11 +51,9 @@ EBic::EBic(int num_gpus, float approx_trend_ratio, int negative_trends, int num_
   gpu_args = new gpu_arguments[NUM_GPUs];
   fitness_array=new int*[NUM_GPUs];
   coverage=new int*[NUM_GPUs];
-
   SHARED_MEMORY_SIZE= pow(2,1+floor(MIN(log(num_rows),9)));
 
   const int BLOCKSIZE[2]={SHARED_MEMORY_SIZE,1};
-
   int remaining_rows=num_rows;
   int rows_covered=0;
   for (int dev=0; dev<NUM_GPUs; ++dev) {
@@ -71,16 +69,14 @@ EBic::EBic(int num_gpus, float approx_trend_ratio, int negative_trends, int num_
     gpuCheck( cudaMallocHost((void**)&coverage[dev], gpu_args[dev].dev_data_split*this->NUM_TRENDS*sizeof(int) ) );
   }
 
-
-//  cout << "AAA:" << gpu_args[0].dev_data_pos*this->num_cols << " " << gpu_args[0].dev_data_split*this->num_cols*sizeof(float) << " " << (int)ceil((double)gpu_args[0].dev_data_split/(double)BLOCKSIZE[0])* this->NUM_TRENDS * sizeof(int) << endl;
-//  cout << endl << *(data+gpu_args[0].dev_data_pos*this->num_cols-1) << endl;
   #pragma omp parallel num_threads(NUM_GPUs)
   {
     const int dev = omp_get_thread_num(); 
-    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
+
+//    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
+    cudaSetDevice(dev);
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_data, gpu_args[dev].dev_data_split * this->num_cols * sizeof(float)) );
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_coverage, gpu_args[dev].dev_data_split * this->NUM_TRENDS * sizeof(int)) );  
-//    gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_fitness_array, (int)ceil((double)gpu_args[dev].dev_data_split/(double)BLOCKSIZE[0])* this->NUM_TRENDS * sizeof(int)) );
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_fitness_array, (int)ceil((double)gpu_args[dev].dev_data_split/(double)BLOCKSIZE[0])* this->NUM_TRENDS * sizeof(int)) );
     gpuCheck( cudaMemcpyAsync(gpu_args[dev].dev_data, data+gpu_args[dev].dev_data_pos*this->num_cols, gpu_args[dev].dev_data_split*this->num_cols*sizeof(float), cudaMemcpyHostToDevice ) );
   }
@@ -92,7 +88,8 @@ EBic::~EBic() {
   #pragma omp parallel num_threads(NUM_GPUs)
   {
     const int dev = omp_get_thread_num(); 
-    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
+//    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
+    cudaSetDevice(dev);
     cudaFree(gpu_args[dev].dev_data);
     cudaFree(gpu_args[dev].dev_fitness_array);
     cudaFree(gpu_args[dev].dev_coverage);
@@ -114,7 +111,8 @@ void EBic::determine_fitness(problem_t *problem, float *fitness) {
   #pragma omp parallel num_threads(NUM_GPUs) 
   {
     const int dev = omp_get_thread_num(); 
-    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
+//    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
+    cudaSetDevice(dev);
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_bicl_indices, (problem->num_trends+1) * sizeof(int)) );
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_compressed_biclusters, problem->size_indices * sizeof(int)) );
     gpuCheck( cudaMemcpyAsync(gpu_args[dev].dev_bicl_indices, problem->bicl_indices, (problem->num_trends+1)*sizeof(int), cudaMemcpyHostToDevice) );
@@ -124,7 +122,8 @@ void EBic::determine_fitness(problem_t *problem, float *fitness) {
   #pragma omp parallel num_threads(NUM_GPUs) 
   {
     const int dev = omp_get_thread_num(); 
-    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
+//    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
+    cudaSetDevice(dev);
     dim3 dimBlock(BLOCKSIZE[0],BLOCKSIZE[1]); //[biclusters, rows]
     dim3 dimGrid( ceil((double)gpu_args[dev].dev_data_split/(double)BLOCKSIZE[0]), problem->num_trends);
     calculate_fitness<float><<< dimGrid, dimBlock, SHARED_MEMORY_SIZE*(sizeof(float)+sizeof(int)) >>> (SHARED_MEMORY_SIZE, EPSILON, MISSING_VALUE, gpu_args[dev].dev_bicl_indices, problem->num_trends, gpu_args[dev].dev_compressed_biclusters, gpu_args[dev].dev_data_split, this->num_cols, gpu_args[dev].dev_data, gpu_args[dev].dev_fitness_array);
@@ -133,7 +132,8 @@ void EBic::determine_fitness(problem_t *problem, float *fitness) {
   #pragma omp parallel num_threads(NUM_GPUs) 
   {
     const int dev = omp_get_thread_num(); 
-    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
+//    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
+    cudaSetDevice(dev);
     gpuCheck( cudaMemcpy(fitness_array[dev], gpu_args[dev].dev_fitness_array, (int)ceil((double)gpu_args[dev].dev_data_split/(double)BLOCKSIZE[0])*problem->num_trends*sizeof(int), cudaMemcpyDeviceToHost) );
   }
   gpuCheck( cudaDeviceSynchronize() );
@@ -154,7 +154,8 @@ void EBic::determine_fitness(problem_t *problem, float *fitness) {
   #pragma omp parallel num_threads(NUM_GPUs) 
   {
     const int dev = omp_get_thread_num(); 
-    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
+//    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
+    cudaSetDevice(dev);
     cudaFree(gpu_args[dev].dev_bicl_indices);
     cudaFree(gpu_args[dev].dev_compressed_biclusters);
   }
@@ -171,7 +172,8 @@ void EBic::get_final_biclusters(problem_t *problem) {
   #pragma omp parallel num_threads(NUM_GPUs)
   {
     const int dev = omp_get_thread_num();
-    gpuCheck( cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1));
+//    gpuCheck( cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1));
+    gpuCheck( cudaSetDevice(dev));
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_bicl_indices, (problem->num_trends+1) * sizeof(int)) );
     gpuCheck( cudaMalloc((void**)&gpu_args[dev].dev_compressed_biclusters, problem->size_indices * sizeof(int)) );
     gpuCheck( cudaMemcpyAsync(gpu_args[dev].dev_bicl_indices, problem->bicl_indices, (problem->num_trends+1)*sizeof(int), cudaMemcpyHostToDevice) );
@@ -183,12 +185,13 @@ void EBic::get_final_biclusters(problem_t *problem) {
   #pragma omp parallel num_threads(NUM_GPUs)
   {
     const int dev = omp_get_thread_num();
-    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
+//    cudaSetDevice(NUM_AVAILABLE_GPUs-dev-1);
+    cudaSetDevice(dev);
     const int BLOCKSIZE[2]={SHARED_MEMORY_SIZE, 1};
     dim3 dimBlock(BLOCKSIZE[0],BLOCKSIZE[1]); //[biclusters, rows]
-    dim3 dimGrid( gpu_args[dev].dev_data_split, problem->num_trends);
-
-
+//    dim3 dimGrid( gpu_args[dev].dev_data_split, problem->num_trends);
+    dim3 dimGrid( ceil((double)gpu_args[dev].dev_data_split/(double)BLOCKSIZE[0]), problem->num_trends);
+    
     get_biclusters<float><<< dimGrid, dimBlock,SHARED_MEMORY_SIZE*(2*sizeof(int)+sizeof(float)) >>> (SHARED_MEMORY_SIZE, APPROX_TRENDS_RATIO, NEGATIVE_TRENDS_ENABLED, EPSILON, MISSING_VALUE, problem->num_trends, gpu_args[dev].dev_bicl_indices, problem->size_indices, gpu_args[dev].dev_compressed_biclusters, gpu_args[dev].dev_data_split, this->num_cols, gpu_args[dev].dev_data, gpu_args[dev].dev_coverage);
 
     gpuCheck( cudaMemcpy(coverage[dev], gpu_args[dev].dev_coverage, gpu_args[dev].dev_data_split*problem->num_trends*sizeof(int), cudaMemcpyDeviceToHost ) );
@@ -209,13 +212,15 @@ void EBic::print_biclusters_synthformat(string results_filename) {
     results_file << "Bicluster([";
     bool is_first=true;
     for (int dev=0; dev<NUM_GPUs; ++dev) {
+//    for (int dev=NUM_GPUs-1; dev>=0; --dev) {
       for (int j=0; j<gpu_args[dev].dev_data_split; j++) {
         if (coverage[dev][i*gpu_args[dev].dev_data_split+j]) {
           if (is_first) {
             is_first=false;
           } else 
             results_file <<", ";
-          results_file << dev*gpu_args[dev].dev_data_split+j;
+          results_file << gpu_args[dev].dev_data_pos+j;
+
         }
       }
     }
@@ -235,15 +240,16 @@ void EBic::print_biclusters_synthformat(string results_filename) {
 void EBic::print_biclusters_blocks(string results_filename) {
   std::ofstream results_file;
   results_file.open(results_filename.c_str());
+
   for (int i=0; i<this->problem.num_trends; ++i) {
-    list<int> row_indices, col_indices;
+    list<long long> row_indices, col_indices;
     std::string bicluster_id = std::string(4 - to_string(i).length(), '0') + to_string(i);
 
 
     for (int dev=0; dev<NUM_GPUs; ++dev) {
-      for (int j=0; j<gpu_args[dev].dev_data_split; j++) {
+      for (auto j=0; j<gpu_args[dev].dev_data_split; j++) {
         if (coverage[dev][i*gpu_args[dev].dev_data_split+j]) {
-          row_indices.push_back(dev*gpu_args[dev].dev_data_split+j);   ///pos ???
+          row_indices.push_back(gpu_args[dev].dev_data_pos+j);
         }
       }
     }
@@ -265,8 +271,7 @@ void EBic::print_biclusters_blocks(string results_filename) {
       results_file << (*row_headers)[idr];
       for (auto idc : col_indices) {
         results_file << "\t";
-        results_file << this->data[idc+num_cols*idr];
-
+        results_file << this->data[idc+(long long)(num_cols)*idr];
       }
       results_file << endl;
     }
@@ -293,7 +298,7 @@ void EBic::print_biclusters(string results_filename) {
     for (int dev=0; dev<NUM_GPUs; ++dev) {
       for (int j=0; j<gpu_args[dev].dev_data_split; j++) {
         if (coverage[dev][i*gpu_args[dev].dev_data_split+j]) {
-          indices.push_back(dev*gpu_args[dev].dev_data_split+j);
+          row_indices.push_back(gpu_args[dev].dev_data_pos+j);
         }
       }
     }
@@ -337,7 +342,7 @@ void EBic::print_biclusters_r(string results_filename) {
     for (int dev=0; dev<NUM_GPUs; ++dev) {
       for (int j=0; j<gpu_args[dev].dev_data_split; j++) {
         if (coverage[dev][i*gpu_args[dev].dev_data_split+j]) {
-          row_indices.push_back(dev*gpu_args[dev].dev_data_split+j);
+          row_indices.push_back(gpu_args[dev].dev_data_pos+j);
         }
       }
     }

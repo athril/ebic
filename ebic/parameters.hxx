@@ -41,9 +41,10 @@ const static int MAX_COLS_CHROMOSOME = 4;
 const static float OVERLAP_PENALTY = 1.2;
 
 const static int MIN_NO_COLS = 4;
-const static int MIN_NO_ROWS =10;
+const static int MIN_NO_ROWS = 10;
 
-const static float EPSILON=0.000001;
+//const static float EPSILON=0.000001;
+const static float EPSILON=0.05;
 
 #define MAX(a,b) ( ((a) > (b)) ? (a) : (b) )
 #define MIN(a,b) ( ((a) < (b)) ? (a) : (b) )

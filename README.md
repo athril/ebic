@@ -4,7 +4,9 @@
 *EBIC* is probably the first algorithm capable of discovering the most challenging patterns (i.e. row-constant, column-constant, shift, scale, shift-scale and trend-preserving) in complex and noisy data with average accuracy of over 90%.
 It is also one of the very few parallel biclustering algorithms that use at least one graphics processing unit (GPU) and is ready for big-data challenges.
 
-*EBIC* is mainly implemented in C++11. CUDA with OpenMP used for parallelization.
+*EBIC* is mainly implemented in C++11. CUDA with OpenMP used for parallelization. 
+
+The latest version of EBIC works also for Big Data.
 
 **EBIC is still under active development**
 
@@ -12,6 +14,26 @@ It is also one of the very few parallel biclustering algorithms that use at leas
 ## License
 
 *EBIC* is MIT-licensed. Please see the [repository license](https://github.com/athril/ebic/blob/master/LICENSE) for the licensing and usage information.
+
+## Citation
+If you happen to use EBIC for mining your data, please cite us using the following BibTex entry:
+
+```
+@article{doi:10.1093/bioinformatics/bty401,
+  author = {Orzechowski, Patryk and Sipper, Moshe and Huang, Xiuzhen and Moore, Jason H},
+  title = {EBIC: an evolutionary-based parallel biclustering algorithm for pattern discovery},
+  journal = {Bioinformatics},
+  volume = {},
+  number = {},
+  pages = {bty401},
+  year = {2018},
+  doi = {10.1093/bioinformatics/bty401},
+  URL = {http://dx.doi.org/10.1093/bioinformatics/bty401},
+  eprint = {/oup/backfile/content_public/journal/bioinformatics/pap/10.1093_bioinformatics_bty401/3/bty401.pdf}
+}
+```
+
+
 
 
 ## Installation

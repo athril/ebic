@@ -37,7 +37,6 @@ SOFTWARE.
 #include <string.h>
 #include "parameters.hxx"
 #include "ebic.hxx"
-
 #define MAX(a,b) ( ((a) > (b)) ? (a) : (b) )
 
 typedef std::vector<int> chromosome;
@@ -256,13 +255,13 @@ void perform_evolutions(EBic &ebic, string input_file, int MAX_ITERATIONS, int M
   for (int i=0; i<num_columns; ++i)
     penalties[i]=1;
 
-  //for (auto counter=0; counter<POPULATION_SIZE;) {
+
   while(population_old.size()<POPULATION_SIZE) {
     chromosome c;
     generate_chromosome(c,MIN_COLS_CHROMOSOME,MAX_COLS_CHROMOSOME,num_columns);
     tabu_approved_addition(population_old, c, tabu_list, penalties);
   }
-  
+
   float *fitness=new float[POPULATION_SIZE];
   float *prev_fitness=new float[POPULATION_SIZE];
   int *rules_indices=new int[POPULATION_SIZE+1];
@@ -270,15 +269,14 @@ void perform_evolutions(EBic &ebic, string input_file, int MAX_ITERATIONS, int M
 
 
 
-  
+
   array_inserter(population_old, rules_indices, compressed_ruleset);
-  //problem_t problem = {POPULATION_SIZE, rules_indices, get_compressed_size(population_old), compressed_ruleset, NUM_ROWS, NUM_COLUMNS, data, row_headers, col_headers};
   problem_t problem = {POPULATION_SIZE, rules_indices, get_compressed_size(population_old), compressed_ruleset};
   ebic.determine_fitness(&problem, fitness);
   //log << "GPU-->--" << endl;
   for (int i=0; i<POPULATION_SIZE; i++)
     prev_fitness[i]=fitness[i];
-  
+
   //logger *log = new logger[POPULATION_SIZE];
   assert(REPRODUCTION_SIZE>1);
 
@@ -304,7 +302,7 @@ void perform_evolutions(EBic &ebic, string input_file, int MAX_ITERATIONS, int M
   }
 
   //GP - ALGORITHM ITERATIONS START HERE................
-  for (int iteration=0; iteration<MAX_ITERATIONS; ++iteration) {    
+  for (int iteration=0; iteration<MAX_ITERATIONS; ++iteration) {
     for (auto t=toplist.rbegin(); t!=toplist.rend() && population_new.size()<=REPRODUCTION_SIZE; ++t) {
       population_new.push_back(t->second);
     }
@@ -373,7 +371,7 @@ void perform_evolutions(EBic &ebic, string input_file, int MAX_ITERATIONS, int M
     int *compressed_ruleset=new int[size_indices];
 
     array_inserter(population_new, rules_indices, compressed_ruleset);
-    problem_t problem = {POPULATION_SIZE, rules_indices, size_indices, compressed_ruleset};//, NUM_ROWS, NUM_COLUMNS, data, row_headers, col_headers};
+    problem_t problem = {POPULATION_SIZE, rules_indices, size_indices, compressed_ruleset};//, NUM_ROWS, NUM_COLUMNS, data, row_headers, col_headers;
 
     ebic.determine_fitness(&problem, fitness);
     //log << "GPU-->--" << endl;
@@ -410,7 +408,8 @@ void perform_evolutions(EBic &ebic, string input_file, int MAX_ITERATIONS, int M
       if (addition_allowed && order.at(i).second->size()>=MIN_NO_COLS && fitness[order_indices.at(i).second]>0) {
         toplist.insert(make_pair(fitness[order_indices.at(i).second],*order.at(i).second));
       }
-    }    
+    }
+
 
     for (auto t=toplist.begin(); t!=toplist.end() && toplist.size()>REPRODUCTION_SIZE; ++t) {
       toplist.erase(t);
@@ -436,6 +435,7 @@ void perform_evolutions(EBic &ebic, string input_file, int MAX_ITERATIONS, int M
     population_old.clear();
     population_old=population_new;
     population_new.clear();
+    delete[] compressed_ruleset;
 //    if (!(iteration % 1000)) {
       cout << "Iteration: " << iteration << endl;
 /*
@@ -480,14 +480,18 @@ void perform_evolutions(EBic &ebic, string input_file, int MAX_ITERATIONS, int M
     log << topbi.first << "->" << topbi.second << " ("<< topbi.second.size() << ")"<< endl;
   }
 #endif
+
   for (auto t=toplist.rbegin(); t!=toplist.rend(); ++t) {
     population_new.push_back(t->second);
     if (population_new.size()>=MAX_NUMBER_BICLUSTERS)
       break;
   }
-  
+
+
+
   int size_indices = get_compressed_size(population_new);
   compressed_ruleset=new int[size_indices];
+  rules_indices=new int[MIN((int)population_new.size(), MAX_NUMBER_BICLUSTERS)+1];
   array_inserter(population_new, rules_indices, compressed_ruleset);
 
   problem = {MIN((int)population_new.size(), MAX_NUMBER_BICLUSTERS), rules_indices, size_indices, compressed_ruleset};//, NUM_ROWS, NUM_COLUMNS, data, row_headers, col_headers};
@@ -504,6 +508,5 @@ void perform_evolutions(EBic &ebic, string input_file, int MAX_ITERATIONS, int M
   }
 #endif
   cout << "Results were written to '" << input_file << "-blocks' and '" << input_file << "-res' files." << endl;
-
   return;
 }

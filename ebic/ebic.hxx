@@ -63,8 +63,8 @@ class EBic {
     int *dev_bicl_indices;
     int *dev_compressed_biclusters;
     float *dev_data;
-    int dev_data_pos;
-    int dev_data_split;
+    long long dev_data_pos;
+    long long dev_data_split;
     int *dev_coverage;
     int *dev_fitness_array;
   } *gpu_args;

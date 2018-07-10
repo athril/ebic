@@ -51,9 +51,7 @@ __device__ void evaluate_trends(int *bicl_indices,
   if (index_x<num_rows ) {
       for(int compressedId=bicl_indices[index_y]+1; compressedId<bicl_indices[index_y+1]; ++compressedId) {
         int pos=compressed_biclusters[compressedId];
-//        trendcheck[threadIdx.x] += (increasing*(data[pos*num_rows+index_x]+EPSILON-trendvalue[threadIdx.x])>= 0 && data[pos*num_rows+index_x]!=MISSING_VALUE);
         trendcheck[threadIdx.x] += (increasing*(data[pos+num_cols*index_x]+EPSILON-trendvalue[threadIdx.x])>= 0 && data[pos+num_cols*index_x]!=MISSING_VALUE);
-//        trendvalue[threadIdx.x] = data[pos*num_rows+index_x];
         trendvalue[threadIdx.x] = data[pos+num_cols*index_x];
         __syncthreads();
       }

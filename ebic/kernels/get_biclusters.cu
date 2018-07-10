@@ -45,7 +45,6 @@ __global__ void get_biclusters(const int SHARED_MEM_SIZE,
   extern __shared__ int memory[];
   int *trend_increasing=memory;
   int *trend_decreasing=&trend_increasing[SHARED_MEM_SIZE];
-  //float *trendvalue=(float*)&trend_decreasing[SHARED_MEM_SIZE];
   T *trendvalue=(T*)&trend_decreasing[SHARED_MEM_SIZE];
 
   long long int index_x = blockIdx.x * blockDim.x + threadIdx.x;    //block of row

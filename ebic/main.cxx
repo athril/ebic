@@ -69,9 +69,9 @@ int main(int argc, char **argv) {
   try {
     app.parse(argc, argv);
     std::stringstream result_filename,result_filename2,result_filename3;
-    result_filename << strdup(input_file.c_str()) <<"-res";
-    result_filename2 << strdup(input_file.c_str()) <<"-blocks";
-    result_filename3 << strdup(input_file.c_str()) <<"-r";
+    result_filename << strdup(input_file.c_str()) <<"-res.txt";
+    result_filename2 << strdup(input_file.c_str()) <<"-blocks.txt";
+    result_filename3 << strdup(input_file.c_str()) <<"-r.txt";
 
     //setting all parameters
     int num_rows, num_columns;
@@ -86,11 +86,14 @@ int main(int argc, char **argv) {
     //srand(time(NULL));
     srand(1);
 
-    int trends_population_size = MIN(pow(2,num_columns-1),1600);
+//  int trends_population_size = MIN(pow(2,num_columns-1),1600);
+//  int trends_population_size = 65535; // max number allowed
+    int trends_population_size = 10000;
+
+
     float *data = &input_data[0];
 
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    //EBic ebic(number_of_gpus, approx_trends_ratio, negative_trends_enabled, trends_population_size, data, num_rows, num_columns, row_headers, col_headers);
     EBic ebic(number_of_gpus, approx_trends_ratio, negative_trends_enabled, trends_population_size, missing_value, data, num_rows, num_columns, row_headers, col_headers);
 
     cout << "Running ebic with the following parameters: ./ebic -i " << input_file << " -n " << max_iterations << " -b " << num_biclusters << " -x " << overlap_threshold << " -a " << approx_trends_ratio << " -t " << negative_trends_enabled << endl;
@@ -103,7 +106,6 @@ int main(int argc, char **argv) {
     ebic.print_biclusters_synthformat(result_filename.str());
     ebic.print_biclusters_blocks(result_filename2.str());
     ebic.print_biclusters_r(result_filename3.str());
-
   } catch (const CLI::ParseError &e) {
     return app.exit(e);
   }

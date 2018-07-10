@@ -42,7 +42,6 @@ struct problem_t {
 
 
 void load_data(string dataset_filename, vector<float> &input_data, int &num_rows, int &num_cols, vector<string> &row_headers, vector<string> &col_headers);
-//void load_data(string dataset_filename, float *input_data, int &num_rows, int &num_cols, vector<string> &row_headers, vector<string> &col_headers);
 
 
 #endif

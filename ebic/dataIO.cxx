@@ -56,7 +56,7 @@ void load_data(string dataset_filename, vector<float> &input_data, int &num_rows
   iss.imbue(std::locale(std::locale(), new word_reader(DATA_DELIMITERS)));
   std::vector<string> tokens{istream_iterator<string>{iss}, istream_iterator<string>{}};
 
-  //check if the first header is empty
+  //check if the header (first line) is empty
   if (line.find_first_not_of(DATA_DELIMITERS)==0)
     tokens.erase(tokens.begin());
 
@@ -73,6 +73,7 @@ void load_data(string dataset_filename, vector<float> &input_data, int &num_rows
     tokens.erase(tokens.begin());
 
     std::transform(std::begin(tokens), std::end(tokens), std::back_inserter(input_data), [](string s) { return std::stof(s); } );
+    tokens.clear();
     num_rows++;
   }
   //std::cout << "PROBLEM SIZE: " << num_rows << " " << num_cols << std::endl;
