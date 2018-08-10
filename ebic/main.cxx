@@ -86,9 +86,9 @@ int main(int argc, char **argv) {
     //srand(time(NULL));
     srand(1);
 
-//  int trends_population_size = MIN(pow(2,num_columns-1),1600);
+  int trends_population_size = MIN(pow(2,num_columns-1),1600);
 //  int trends_population_size = 65535; // max number allowed
-    int trends_population_size = 10000;
+//    int trends_population_size = 10000;
 
 
     float *data = &input_data[0];
