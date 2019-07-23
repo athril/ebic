@@ -75,6 +75,7 @@ Options:
 
 *  -l,--log                    is logging enabled [false]
 
+*  -m,--missing_calue INT      a parameter substituting a missing value (in order to change the focus of the method)
 
 
 ## Examples
